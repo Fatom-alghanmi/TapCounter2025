@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             tapCount++
+            tapSound.start()
             countText.text = getString(R.string.taps, tapCount)
         }
 
@@ -85,7 +86,6 @@ class MainActivity : AppCompatActivity() {
             {
                 timer.cancel()
             }
-
             tapCount = 0
             countText.text = getString(R.string.taps_0)
             timerText.text = getString(R.string.time_left_20)
