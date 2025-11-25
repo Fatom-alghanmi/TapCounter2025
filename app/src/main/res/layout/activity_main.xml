@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/baloons"
+    android:paddingTop="24dp"
     tools:context=".MainActivity">
 
     <TextView
@@ -19,25 +20,24 @@
         android:fontFamily="@font/balloonish"
         android:padding="16dp"
         android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-    android:id="@+id/countText"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/taps_0"
-    android:textColor="@color/yellow"
-    android:textStyle="bold"
-    android:textSize="20sp"
-    android:fontFamily="@font/balloonish"
-    android:padding="16dp"
-    android:layout_marginTop="32dp"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/timerText" />
+        android:id="@+id/countText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/taps_0"
+        android:textColor="@color/yellow"
+        android:textStyle="bold"
+        android:textSize="28sp"
+        android:fontFamily="@font/balloonish"
+        android:padding="16dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timerText" />
 
     <TextView
         android:id="@+id/textView"
@@ -51,20 +51,19 @@
         android:layout_marginTop="120dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timerText"
+        app:layout_constraintTop_toBottomOf="@id/countText"
         app:layout_constraintHorizontal_bias="0.5" />
 
     <Button
         android:id="@+id/resetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:backgroundTint="#FF5722"
         android:text="@string/reset"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timerText"
-        />
+        app:layout_constraintTop_toBottomOf="@id/textView" />
 
     <TextView
         android:id="@+id/topScoresText"
@@ -79,7 +78,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resetButton"
+        app:layout_constraintTop_toBottomOf="@id/resetButton"
         app:layout_constraintHorizontal_bias="0.5" />
 
     <Button
@@ -91,8 +90,7 @@
         android:text="@string/reset_high_scores"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topScoresText"
-        />
+        app:layout_constraintTop_toBottomOf="@id/topScoresText" />
 
     <ImageButton
         android:id="@+id/tapButton"
@@ -103,8 +101,6 @@
         android:contentDescription="@string/tap_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

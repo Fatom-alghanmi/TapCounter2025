@@ -1,5 +1,6 @@
 package com.trios2025dej.tapcounter2025
 
+import android.content.IntentSender
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -53,6 +54,36 @@ class MainActivity : AppCompatActivity() {
         tapButton = findViewById(R.id.tapButton)
         resetButton = findViewById(R.id.resetButton)
         resetHighScore = findViewById(R.id.resetHighScoresButton)
+
+        tapSound = MediaPlayer.create(this, R.raw.tap_sound)
+        gameOverSound = MediaPlayer.create(this, R.raw.game_over)
+
+        val totalTime = 20 * 1000L
+
+        timer = object : CountDownTimer(totalTime, 1000)
+        override fun onTick(millisUnitilFinished: Long) {
+            val secondLeft = millisUnitilFinished / 1000
+            timerText.text = getString(R.string.times_up)
+        }
+
+        override fun onFinish() {
+            timerText.text = getString(R.string.times_up)
+            tapButton.isEnabled = false
+            isRunning = false
+        }
+
+        tapButton.setOnClickListener {
+            if (!isRunning) {
+                isRunning = true
+                timer.start()
+            }
+        }
+
+        tapButton.setOnClickListener {
+            tapCount++
+            countText.text = getString(R.string.taps, tapCount)
+
+        }
 
 
 
