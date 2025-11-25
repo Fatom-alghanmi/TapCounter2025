@@ -1,6 +1,5 @@
 package com.trios2025dej.tapcounter2025
 
-import android.content.IntentSender
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -11,7 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.color.utilities.Score
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,8 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var topScoresText: TextView
     private lateinit var tapButton: ImageButton
     private lateinit var resetButton: Button
-    private lateinit var resetHighScore: Button
-
+    private lateinit var resetHighScoresButton: Button
 
     private var tapCount = 0
     private var isRunning = false
@@ -37,11 +34,8 @@ class MainActivity : AppCompatActivity() {
     private var screenWidth = 0
     private var screenHeight = 0
 
-    private var originalX = 0f// or 0.0
+    private var originalX = 0f
     private var originalY = 0f
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,23 +47,26 @@ class MainActivity : AppCompatActivity() {
         topScoresText = findViewById(R.id.topScoresText)
         tapButton = findViewById(R.id.tapButton)
         resetButton = findViewById(R.id.resetButton)
-        resetHighScore = findViewById(R.id.resetHighScoresButton)
+        resetHighScoresButton = findViewById(R.id.resetHighScoresButton)
 
         tapSound = MediaPlayer.create(this, R.raw.tap_sound)
         gameOverSound = MediaPlayer.create(this, R.raw.game_over)
 
         val totalTime = 20 * 1000L
 
-        timer = object : CountDownTimer(totalTime, 1000)
-        override fun onTick(millisUnitilFinished: Long) {
-            val secondLeft = millisUnitilFinished / 1000
-            timerText.text = getString(R.string.times_up)
-        }
+        timer = object : CountDownTimer(totalTime, 1000) {
 
-        override fun onFinish() {
-            timerText.text = getString(R.string.times_up)
-            tapButton.isEnabled = false
-            isRunning = false
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsLeft = millisUntilFinished / 1000
+                timerText.text = getString(R.string.time_left, secondsLeft)
+            }
+
+            override fun onFinish() {
+                timerText.text = getString(R.string.times_up)
+                tapButton.isEnabled = false
+                isRunning = false
+            }
+
         }
 
         tapButton.setOnClickListener {
@@ -77,16 +74,23 @@ class MainActivity : AppCompatActivity() {
                 isRunning = true
                 timer.start()
             }
-        }
 
-        tapButton.setOnClickListener {
             tapCount++
             countText.text = getString(R.string.taps, tapCount)
-
         }
 
+        resetButton.setOnClickListener {
+            if (isRunning)
+            {
+                timer.cancel()
+            }
 
-
+            tapCount = 0
+            countText.text = getString(R.string.taps_0)
+            timerText.text = getstring(R.string.time_left_20)
+            tapButton.isEnabled = true
+            isRunning = false
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
