@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                 timerText.text = getString(R.string.times_up)
                 tapButton.isEnabled = false
                 isRunning = false
+                gameOverSound.start()
             }
 
         }
@@ -87,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
             tapCount = 0
             countText.text = getString(R.string.taps_0)
-            timerText.text = getstring(R.string.time_left_20)
+            timerText.text = getString(R.string.time_left_20)
             tapButton.isEnabled = true
             isRunning = false
         }
