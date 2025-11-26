@@ -4,6 +4,8 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -12,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,12 +47,34 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        // Get screen size after layout is drawn
+        val mainLayout = findViewById<View>(R.id.main)
+        mainLayout.viewTreeObserver.addOnGlobalLayoutListener(
+            object: ViewTreeObserver.OnGlobalLayoutListener{
+                override fun onGlobalLayout() {
+                    screenWidth = mainLayout.width
+                    screenHeight = mainLayout.height
+                    mainLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            }
+        )
+
         timerText = findViewById(R.id.timerText)
         countText = findViewById(R.id.countText)
         topScoresText = findViewById(R.id.topScoresText)
         tapButton = findViewById(R.id.tapButton)
         resetButton = findViewById(R.id.resetButton)
         resetHighScoresButton = findViewById(R.id.resetHighScoresButton)
+
+        tapButton.viewTreeObserver.addOnGlobalLayoutListener(
+            object: ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    originalX = tapButton.x
+                    originalY = tapButton.y
+                    tapButton.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            }
+        )
 
         tapSound = MediaPlayer.create(this, R.raw.tap_sound)
         gameOverSound = MediaPlayer.create(this, R.raw.game_over)
@@ -70,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                 tapButton.isEnabled = false
                 isRunning = false
                 gameOverSound.start()
+                updateTopScores()
             }
 
         }
@@ -83,10 +109,13 @@ class MainActivity : AppCompatActivity() {
             tapCount++
             tapSound.start()
             countText.text = getString(R.string.taps, tapCount)
+
+            moveButtonRandomly()
         }
 
         resetButton.setOnClickListener {
-            if (isRunning) {
+            if (isRunning)
+            {
                 timer.cancel()
             }
             tapCount = 0
@@ -94,6 +123,10 @@ class MainActivity : AppCompatActivity() {
             timerText.text = getString(R.string.time_left_20)
             tapButton.isEnabled = true
             isRunning = false
+
+            // Move button back to original position
+            tapButton.x = originalX
+            tapButton.y = originalY
         }
 
         resetHighScoresButton.setOnClickListener {
@@ -108,43 +141,47 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         displayTopScores()
     }
 
     private fun updateTopScores() {
         topScores.add(tapCount)
         topScores.sortDescending()
+
         if (topScores.size > 5) {
             topScores.removeAt(topScores.lastIndex)
         }
 
         saveTopScores()
         displayTopScores()
-
     }
+
     private fun displayTopScores() {
-        val scoreText = StringBuilder( getString(R.string.top_5_scores) + "\n")
-        topScores.forEachIndexed{ index, score ->
-            scoreText.append("${index  + 1}: $score\n")
+        val scoreText = StringBuilder(getString(R.string.top_5_scores) + "\n")
+        topScores.forEachIndexed { index, score ->
+            scoreText.append("${index + 1}: $score\n")
         }
         topScoresText.text = scoreText.toString()
     }
-    private fun saveTopScores() {
-        val sharePref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val editor =sharePref.edit()
-        editor.putString(SCORES_KEY, topScores.joinToString(separator = ","))
-        editor.apply()
 
+    private fun saveTopScores() {
+        val sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putString(SCORES_KEY, topScores.joinToString(","))
+        editor.apply()
     }
+
     private fun loadTopScores() {
         val sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedScores = sharedPref.getString(SCORES_KEY, "")
 
         if (!savedScores.isNullOrEmpty()) {
             topScores.clear()
-            topScores.addAll(savedScores.split( ",").map {it.toInt()})
+            topScores.addAll(savedScores.split(",").map { it.toInt() })
         }
     }
+
     private fun clearHighScores() {
         val sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val editor = sharedPref.edit()
@@ -154,9 +191,28 @@ class MainActivity : AppCompatActivity() {
         topScores.clear()
     }
 
+    private fun moveButtonRandomly() {
+        if (screenWidth == 0 || screenHeight == 0) {
+            return
+        }
+
+        val buttonWidth = tapButton.width
+        val buttonHeight = tapButton.height
+
+        val maxX = screenWidth - buttonWidth
+        val maxY = screenHeight - buttonHeight
+
+        val randomX = Random.nextInt(0, maxX)
+        val randomY = Random.nextInt(25, maxY)
+
+        tapButton.x = randomX.toFloat()
+        tapButton.y = randomY.toFloat()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         tapSound.release()
         gameOverSound.release()
     }
+
 }
